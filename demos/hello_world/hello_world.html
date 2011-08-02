@@ -1,48 +1,37 @@
 <html>
-<head>
-    <title>Hello World Example</title>
-    <script src="../../scripts/sockit.js"></script>
+    <head>
+        <title>Hello World Example</title>
+        <script src="../../scripts/sockit.js"></script>
+    </head>
 
-    <style>
+    <body>
+        <script type="text/javascript">
 
-        #out
-        {
-            padding: 5px;
-            width: 900px;
-            height: 500px;
-            margin: 0 auto;
-            background-color: #eeeeee;
-            overflow: auto;
-        }
+            // Load the SockIt plugin
+            loadSockitPlugin();
 
-    </style>
+            // Start a TCP server listening on port 8080
+            var server = sockit.createTcpServer(8080);
+            server.listen();
 
-</head>
-<body>
+            // Whenever this sever receives 'hello', respond with 'world'
+            server.addEventListener('data', function(event) {
+                if(event.read() == 'hello') {
+                    event.send('world!');
+                }
+            });
 
-<script type="text/javascript">
+            // Create a TCP client to connect to the server, and when it receives data, create an alert with the data
+            var client = sockit.createTcpClient("127.0.0.1", 8080);
+            client.addEventListener('data', function(event) {
+                alert(event.read());
+            });
 
-    var sockit = loadSockitPlugin();
+        </script>
 
-    var server = sockit.createTcpServer(8080);
-    server.listen();
-
-    server.addEventListener('data', function(event) {
-        console.log(event.read());        // log the input
-        event.send('world!');	     // send the data back to the client
-    });
-
-    var client = sockit.createTcpClient("127.0.0.1", 8080);
-
-    client.addEventListener('data', function(event) {
-        alert(event.read());
-    });
-
-</script>
-
-<center>
-    <h2>Click to send 'hello' from the client:</h2>
-    <input type="button" value="Send it!" onclick="javascript:client.send('hello');"/>
-</center>
-</body>
+        <center>
+            <h2>Click to send 'hello' from the client:</h2>
+            <input type="button" value="Send it!" onclick="client.send('hello');"/>
+        </center>
+    </body>
 </html> 
