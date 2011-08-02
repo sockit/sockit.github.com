@@ -54,3 +54,27 @@ function keyup_chatter(event)
 		enter_message();
 	}
 }
+
+
+$("#username").show()
+$("#usernamebutton").show();
+$("#username").focus();
+
+$("#username").keyup(keyup_username);
+$("#chatter").keyup(keyup_chatter);
+
+$("#chatter").hide();
+$("#chatterbutton").hide();
+
+$("#username").click(function(event) {
+    if($("#username").val() == 'username') {
+        $("#username").val("")
+    }
+});
+
+$("#chatter").click(function(event) {
+    if($("#chatter").val() == 'type here') {
+        $("#chatter").val("")
+    }
+});
+

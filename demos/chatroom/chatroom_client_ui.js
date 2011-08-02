@@ -86,3 +86,29 @@ function keyup_chatter(event)
 	}
 }
 
+
+// Initialize the UI
+$("#ip").focus();
+$("#username").hide();
+$("#usernamebutton").hide();
+$("#chatter").hide();
+$("#chatterbutton").hide();
+$("#ip").keyup(keyup_ip);
+$("#username").keyup(keyup_username);
+$("#chatter").keyup(keyup_chatter);
+$("#ip").click(function(event) {
+    if($("#ip").val() == 'enter other ip') {
+        $("#ip").val("")
+    }
+});
+$("#username").click(function(event) {
+    if($("#username").val() == 'username') {
+        $("#username").val("")
+    }
+});
+$("#chatter").click(function(event) {
+    if($("#chatter").val() == 'type here') {
+        $("#chatter").val("")
+    }
+});
+

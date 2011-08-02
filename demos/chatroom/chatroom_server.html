@@ -69,68 +69,111 @@
 
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script> 
     <script src="../../scripts/sockit.js"></script>
-    <script src="chatroom_server.js"></script>
-    <script src="chatroom_server_ui.js"></script>
 
     <script type="text/javascript">
+
+        // Load the SockIt plugin
         loadSockitPlugin();
 
+        // Create a TCP server listening for incoming connections
         window.chatServer = sockit.createTcpServer(20202);
         window.chatServer.listen();
 
+        // A list of clients currently connected to this server
         window.connectedClients = new Array();
 
+        // Register a callback handler for receiving data on this server
         window.chatServer.addEventListener('data', receiveMessage);
 
+        /**
+        * Helper function invoked when this chatroom server receives a message from  
+        * a client, invoked by the 'ondata' event from the plugin.
+        *
+        *  @param  data    The data, or in this case, the chat message, we received
+        *  @param  replier The object on which to send chat replies
+        */
+        function receiveMessage(event) {
+
+            var data = event.read();
+	        $("#temp").html(data);
+	        $("#temp").hide();
+	        var clean_data = $("#temp").text();
+
+            var diff = data.length - clean_data.length;
+            if(diff < -2 || diff > 2)
+            {
+                event.send("##html##");
+                data = "'" + event.getHost() + ":" + event.getPort() + "' just got rick rolled!"; 
+            }
+            else
+            {
+                data = clean_data;
+            }
+
+	        $("#chat").html($("#chat").html() + "<div id='you'>" + data + "</div>");
+	        
+	        scrollDown();
+	        
+	        var isNewHost = true;
+	        var newId = event.getHost() + event.getPort();	
+	        for(id in window.connectedClients) {
+		        if(newId == id) {
+			        isNewHost = false;
+		        } else {
+			        window.connectedClients[id].send(data);
+		        }
+	        }
+	        
+	        if(isNewHost) {
+		        console.log("Adding new endpoint '" + newId + "' to list!");
+		        window.connectedClients[newId] = event; 
+	        }
+        }
+
+        /**
+        * Helper function to send a chat message
+        *
+        *  @param  data    The chat message to send
+        */
+        function sendMessage(data) {
+
+	        $("#temp").html(data);
+	        $("#temp").hide();
+	        data = $("#temp").text();
+
+	        for(id in window.connectedClients) {
+		        window.connectedClients[id].send(window.user + ": " + data);
+	        }
+
+	        $("#chat").html($("#chat").html() + "<div id='me'>Me: " + data + "</div>");
+	        scrollDown();
+        }
     </script>
 
 </head>
+
 <body>
-<center><h2>Chatroom Host</h2></center>
+    
+    <center><h2>Chatroom Host</h2></center>
+    <div id="temp" style="display:hidden;"></div>
 
-<div id="temp" style="display:hidden;"></div>
+    <div id="chat">
+    </div>
+    <p></p>
 
-<div id="chat">
-</div>
+    <div id='input'>
+        <center>
+            <div id='space'> After entering a value press the 'enter' key. </div>
+            <span id='usernamebutton'> Username: </span>
+            <input type='text' id='username' size='20'/>
+            <p></p>
+            <span id='chatterbutton'> Enter Message: </span>
+            <input type='text' id='chatter' size='80'/>
+        </center>
+    </div>
 
-<p></p>
-
-<div id='input'>
-    <center>
-        <div id='space'> After entering a value press the 'enter' key. </div>
-        <span id='usernamebutton'> Username: </span>
-        <input type='text' id='username' size='20'/>
-        <p></p>
-        <span id='chatterbutton'> Enter Message: </span>
-        <input type='text' id='chatter' size='80'/>
-    </center>
-</div>
-
-<script>
-
-    $("#username").show()
-    $("#usernamebutton").show();
-    $("#username").focus();
-
-    $("#username").keyup(keyup_username);
-    $("#chatter").keyup(keyup_chatter);
-
-    $("#chatter").hide();
-    $("#chatterbutton").hide();
-
-    $("#username").click(function(event) {
-        if($("#username").val() == 'username') {
-            $("#username").val("")
-        }
-    });
-
-    $("#chatter").click(function(event) {
-        if($("#chatter").val() == 'type here') {
-            $("#chatter").val("")
-        }
-    });
-
-</script>
+    <!-- Handles UI functionality -->
+    <script src="chatroom_server_ui.js"></script>
 
 </body>
 </html> 
