@@ -23,14 +23,8 @@
 	    {
             s = cleanup(s);
 		    $("#out").html( $("#out").html() + "<p>" + s + "</p>");
-            scrollDown();
+            $("#out").scrollTop(10000000);
 	    }
-
-        // Scrolls down in the window
-        function scrollDown()
-        {
-	        $("#out").scrollTop(10000000);
-        }
 
         // Helper to escape html tags
         function cleanup(data)
