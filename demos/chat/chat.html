@@ -6,13 +6,6 @@
     <title>Chat</title>
     <style>
 
-        {
-            padding: 5
-        ;
-            margin: 5
-        ;
-        }
-
         .header {
             text-align: center;
             border: 1px solid black;
@@ -40,10 +33,6 @@
             margin-bottom: 30px;
         }
 
-        #text {
-            width: 500px;
-        }
-
         #me {
             color: #2a4480;
             padding: 3px;
@@ -63,82 +52,97 @@
 
     <!-- Used for UI enhancements for demo -->
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script> 
+
     <script src="chatUi.js"></script>
 
     <!-- Loads the SockIt plugin -->
     <script src="../../scripts/sockit.js"></script>
 
-    <!-- Core javascript code for chatting with SockIt -->
-    <script src="chat.js"></script>
-
     <script type="text/javascript">
+
+        // Load the SockIt plugin
         loadSockitPlugin();
+
+        // Create a TCP server, and callback on data or error, and start listening
         var server = sockit.createTcpServer(20202);
         server.addEventListener('data', receiveMessage);
         server.addEventListener('error', log);
         server.listen();
+
+        /**
+        * Helper function to scroll the chat box down.
+        */
+        function scrollDown() {
+	        $("#chat").scrollTop(10000000);
+        }
+
+        /**
+        * Invoked whenever this chat window receives a message
+        *
+        *  @param  data    The text to output on the chat window.
+        */
+        function receiveMessage(event) {
+            var data = event.read();
+	        $("#temp").html(data);
+	        $("#temp").hide();
+	        data = $("#temp").text();
+	        $("#chat").html($("#chat").html() + "<div id='you'>" + data + "</div>");
+	        scrollDown();
+        }
+
+        /**
+        * Start the chat application up, and connect to the other chat window, which,
+        * should be listening on port 20202.
+        *
+        *  @param  otherIP The IP address of the remote chat window
+        */
+        function startChat(otherIP) {
+	        window.client = sockit.createTcpClient(otherIP, 20202);
+        }
+
+        /**
+        * Helper function to send a message to the other chat application
+        *
+        *  @param  data    The message to send
+        */
+        function sendMessage(data) {
+	        $("#temp").html(data);
+	        $("#temp").hide();
+	        data = $("#temp").text();
+	        window.client.send(window.user + ": " + data);
+	        $("#chat").html($("#chat").html() + "<div id='me'>Me: " + data + "</div>");
+	        scrollDown();
+        }
+
     </script>
 
 </head>
 <body>
-<center>
-    <h2>SockIt Chat</h2>
-</center>
 
-<div id="temp" style="display:hidden;"></div>
-
-<div id="chat">
-</div>
-
-<p></p>
-
-<div id='input'>
     <center>
-        <div id='space'> After entering a value press the 'enter' key.</div>
-        <span id='ipbutton'> IP Address: </span>
-        <input type='text' id='ip' size='20'/>
-
-        <p></p>
-        <span id='usernamebutton'> Username: </span>
-        <input type='text' id='username' size='20'/>
-
-        <p></p>
-        <span id='chatterbutton'> Enter Message: </span>
-        <input type='text' id='chatter' size='80'/>
+        <h2>SockIt Chat</h2>
     </center>
-</div>
+    <div id="temp" style="display:hidden;"></div>
 
-<script>
+    <div id="chat">
+    </div>
+    <p></p>
 
-    $("#ip").focus();
-    $("#username").hide();
-    $("#usernamebutton").hide();
-    $("#chatter").hide();
-    $("#chatterbutton").hide();
+    <div id='input'>
+        <center>
+            <div id='space'> After entering a value press the 'enter' key.</div>
+            <span id='ipbutton'> IP Address: </span>
+            <input type='text' id='ip' size='20'/>
+            <p></p>
 
-    $("#ip").keyup(keyup_ip);
-    $("#username").keyup(keyup_username);
-    $("#chatter").keyup(keyup_chatter);
+            <span id='usernamebutton'> Username: </span>
+            <input type='text' id='username' size='20'/>
+            <p></p>
 
-    $("#ip").click(function(event) {
-        if ($("#ip").val() == 'enter other ip') {
-            $("#ip").val("")
-        }
-    });
-
-    $("#username").click(function(event) {
-        if ($("#username").val() == 'username') {
-            $("#username").val("")
-        }
-    });
-
-    $("#chatter").click(function(event) {
-        if ($("#chatter").val() == 'type here') {
-            $("#chatter").val("")
-        }
-    });
-
-</script>
+            <span id='chatterbutton'> Enter Message: </span>
+            <input type='text' id='chatter' size='80'/>
+        </center>
+    </div>
 
 </body>
 </html> 
