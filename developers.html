@@ -11,40 +11,93 @@
 				<h1>SockIt &#183; Developers</h1>
                 <p></p>
                 <h3><a href="downloads.html">Download</a></h3>
-	            <br><a href="index.html">Home</a> &#183; <a href="tutorial.html">Quick Tutorial</a> &#183; <a href="full_tutorial.html">Full Tutorial</a> &#183; <a href="downloads.html">Downloads</a> &#183; <a href="demos.html">Demos</a> &#183; <a href="api_documentation.html">API Documentation</a> &#183; <a href="html/index.html">Source Documentation</a> &#183; <a href="developers.html">Developers</a>
+	            <br><a href="index.html">Home</a> &#183; <a href="tutorial.html">Quick Tutorial</a> &#183; <a href="full_tutorial.html">Full Tutorial</a> &#183; <a href="downloads.html">Downloads</a> &#183; <a href="demos.html">Demos</a> &#183; <a href="api_documentation.html">API</a> &#183; <a href="html/index.html">Source Documentation</a> &#183; <a href="developers.html">Developers</a>
 
 			</center>
 
-			<h2>Developers</h2>
-			<p>
-				To get familiar with the code, see the full <a href="html/index.html">source documentation</a>, or browse the code on GitHub.
-			</p>
+			<h2>Overview</h2>
 			<div class="section">
+			    <p>
+			    To get familiar with the code, see the full <a href="html/index.html">source documentation</a>, or browse the code on GitHub.<br/><br/>
+                The structure of Firebreath forces the project directories to be structured a bit counter-intuitively, such that the SockIt source root is located in the <code>projects</code> directory of the firebreath source tree.
+			    </p>
 				<p>
-					The build process is automated on both Windows and Linux, but has several dependencies.
+					The build process is automated on Windows, Linux, and Mac, but each platform has a few basic dependencies.
 				</p>
-				
-				<h2>Windows</h2>
-				<ol>
-					<li>Install Visual Studio 2010 (Visual Studio 2005 and 2008 should also work, but are untested)</li>
-					<li>Add Visual Studio's <code>msbuild</code> and its dependencies to your path</li>
-					<li>Install Git</li>
-					<li>Clone the SockIt repo into the <code>projects</code> directory</li>
-					<li>Go to the <code>projects/sockit</code> directory, and run <code>build.bat</code></li>
-					<li>To package the plugin, add Google Chrome to your path, and run <code>copy.bat</code> followed by <code>pack.bat</code></li>
-				</ol>
-				
-				<h2>Linux</h2>
-				<ol>
-					<li>Install dependencies:</li>
-						<pre>sudo apt-get install cmake libgtk2.0 doxygen git g++</pre>
-					<li>Clone the <a href="http://github.com/sockit/sockit">SockIt repo</a> into the <code>projects</code> directory and go to the SockIt project directory</li>
+            </div>
 
-					<li>Run <code>make</code>. This will build the project, generate the doxygen documentation, and package and install the plugin.</li>
+
+            <h2>Getting the Source</h2>
+            <div class="section">
+                <p></p>
+                <ol>
+                    <li>Install <a href="http://git-scm.com/">git</a> if you have not already done so, and if you are on Windows, add git to your <code>PATH</code> variable.</li>
+                    <li>Clone the <code>firebreath-dev</code> branch. This project requires at least version 1.5, but in our experience building the plugin, the firebreath dev branch has been fairly stable.
+                        <pre>git clone git://github.com/firebreath/FireBreath.git firebreath-dev</pre>
+                    </li>
+                    <li>
+                        Make the <code>projects</code> directory.
+                        <pre>mkdir firebreath-dev/projects</pre>
+                    </li>
+                    <li>
+                        Clone the SockIt source as a new project, and <code>cd</code> into the project directory.
+                        <pre>git clone git@github.com:sockit/sockit.git firebreath-dev/projects/sockit && cd firebreath-dev/projects/sockit</pre>
+                    </li>
+                </ol>
+            </div>
+
+
+            <h2>Building</h2>
+            <div class="section">
+ 			    <h3>Linux</h3>
+			    <ol>
+				    <li>Install dependencies of Firebreath and SockIt.</li>
+					    <pre>sudo apt-get install cmake libgtk2.0 g++</pre>
+				    <li>Build for either 32-bit or 64-bit Linux by providing <code>64</code> or <code>32</code> for <code>platform</code>, respectively.
+                        <pre>./build_linux.sh &lt;platform&gt;</pre>
+                    </li>
+			    </ol>
+                <h3>Mac OSX</h3>
+                <ol>
+				    <li>Install dependencies of Firebreath and SockIt.</li>
+					    <pre>sudo apt-get install cmake libgtk2.0 g++</pre>
+				    <li>Build universal SockIt binaries for Mac by running <code>build_mac.sh</code>.</li>
+                </ol>
+			    <h3>Windows</h3>
+				<ol>
+					<li>Install Visual Studio 2010 (Visual Studio 2005 and 2008 should also work, but are untested).</li>
+					<li>Add Visual Studio's <code>msbuild</code> and its dependencies to your path.</li>
+					<li>Install Git and it binaries to your <code>PATH</code> variable.</li>
+                    <li>Clone the <a href="http://github.com/sockit/sockit">SockIt repo</a> into the <code>projects/sockit</code> directory.</li>
+                        <pre>git clone git@github.com:sockit/sockit.git firebreath-dev</pre>
+                        <pre>cd sockit</pre>
+					<li>Run <code>build_win.bat</code>.</li>
 				</ol>
-			</div> <br><br>
+            </div>
+
+            <h2>Packaging</h2>
+            <div class="section">
+                <h3>Linux</h3>
+                <ol>
+                    <li>Package SockIt for Chrome and Firefox on either 32-bit or 64-bit Linux by providing <code>64</code> or <code>32</code> for <code>platform</code>, respectively.
+                        <pre>./pack_linux.sh &lt;platform&gt;</pre>
+                    </li>
+                    <li>Binaries can be found in <code>bin/linux/</code>.</li>
+                </ol>
+                <h3>Mac</h3>
+                <ol>
+                    <li>Package SockIt for Chrome, Firefox, and Safari by running <code>pack_mac.sh</code>.
+                    <li>Binaries can be found in <code>bin/mac/</code>.</li>
+                </ol>
+                <h3>Windows</h3>
+                To package SockIt on Windows, add Chrome to your <code>PATH</code>.
+                <ol>
+                    <li>Package SockIt for Safari, Chrome, and Firefox on Windows by running <code>pack_win.bat</code>.</li>
+                    <li>Binaries can be found in <code>bin/win/</code>.</li>
+                </ol>
+            </div>
 	<center>
-		<a href="index.html">Home</a> &#183; <a href="tutorial.html">Quick Tutorial</a> &#183; <a href="full_tutorial.html">Full Tutorial</a> &#183; <a href="downloads.html">Downloads</a> &#183; <a href="demos.html">Demos</a> &#183; <a href="api_documentation.html">API Documentation</a> &#183; <a href="html/index.html">Source Documentation</a> &#183; <a href="developers.html">Developers</a>
+		<a href="index.html">Home</a> &#183; <a href="tutorial.html">Quick Tutorial</a> &#183; <a href="full_tutorial.html">Full Tutorial</a> &#183; <a href="downloads.html">Downloads</a> &#183; <a href="demos.html">Demos</a> &#183; <a href="api_documentation.html">API</a> &#183; <a href="html/index.html">Source Documentation</a> &#183; <a href="developers.html">Developers</a>
 
 	</center>
 	</body>
