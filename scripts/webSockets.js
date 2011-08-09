@@ -199,9 +199,12 @@ function WebSocket (url,  protocols)
                 // Check if this websocket is configured to send back batch messages
                 if(This.batchMessages)
                 {
-                    // Send back the event with a data array instead of one message
-                    var messageEvent = new MessageEvent(messages, event.getHost() + ":" + event.getPort());
-                    This.onmessage(messageEvent);
+                    // Send back the event with a data array instead of one message (if there's any data)
+                    if(messages.length > 0)
+                    {
+                        var messageEvent = new MessageEvent(messages, event.getHost() + ":" + event.getPort());
+                        This.onmessage(messageEvent);
+                    }
                 }
                 else
                 {
@@ -251,16 +254,20 @@ function WebSocket (url,  protocols)
         // Chck if this web socket is configured to send back batch messages
         if(This.batchMessages)
         {
-            // Gather the messages
-            var messages = [];
-            for(i in callbackQueue) {
-                messages.push(callbackQueue[i].data);
-            }
-            callbackQueue = [];
+            if(callbackQueue.length > 0)
+            {
+                // Gather the messages
+                var messages = [];
+                var url = callbackQueue[0].getHost() + ":" + callbackQueue[0].getPort();
+                for(i in callbackQueue) {
+                    messages.push(callbackQueue[i].data);
+                }
+                callbackQueue = [];
 
-            // Send back the batch message event
-            var messageEvent = new MessageEvent(messages, event.getHost() + ":" + event.getPort());
-            This.onmessage(messageEvent);
+                // Send back the batch message event
+                var messageEvent = new MessageEvent(messages, url);
+                This.onmessage(messageEvent);
+            }
         }
         else
         {
