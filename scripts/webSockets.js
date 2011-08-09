@@ -196,13 +196,23 @@ function WebSocket (url,  protocols)
             // If there's no delay between callbacks, perform a callback immediately with all data
             if(This.callbackInterval == 0)
             {
-                // Fire a message event for every message
-                for (messageIndex in messages)
+                // Check if this websocket is configured to send back batch messages
+                if(This.batchMessages)
                 {
-                    if (This.onmessage != null)
+                    // Send back the event with a data array instead of one message
+                    var messageEvent = new MessageEvent(messages, event.getHost() + ":" + event.getPort());
+                    This.onmessage(messageEvent);
+                }
+                else
+                {
+                    // Fire a message event for every message
+                    for (messageIndex in messages)
                     {
-                        var messageEvent = new MessageEvent(messages[messageIndex], event.getHost() + ":" + event.getPort());
-                        This.onmessage(messageEvent);
+                        if (This.onmessage != null)
+                        {
+                            var messageEvent = new MessageEvent(messages[messageIndex], event.getHost() + ":" + event.getPort());
+                            This.onmessage(messageEvent);
+                        }
                     }
                 }
             }
@@ -237,10 +247,29 @@ function WebSocket (url,  protocols)
     {
         // Flush the queue of callback messages
         callbacksFlushing = true;
-        for(i in callbackQueue) {
-            This.onmessage(callbackQueue[i]);
+
+        // Chck if this web socket is configured to send back batch messages
+        if(This.batchMessages)
+        {
+            // Gather the messages
+            var messages = [];
+            for(i in callbackQueue) {
+                messages.push(callbackQueue[i].data);
+            }
+            callbackQueue = [];
+
+            // Send back the batch message event
+            var messageEvent = new MessageEvent(messages, event.getHost() + ":" + event.getPort());
+            This.onmessage(messageEvent);
         }
-        callbackQueue = new Array();
+        else
+        {
+            // Trigger the callbacks for each message
+            for(i in callbackQueue) {
+                This.onmessage(callbackQueue[i]);
+            }
+            callbackQueue = [];
+        }
 
         // If we still have a callback delay set, run this function again soon
         if(This.callbackInterval > 0 )
@@ -420,6 +449,9 @@ function WebSocket (url,  protocols)
     // Configure delay between callback
     this.callbackInterval = 0;
     var callbacksFlushing = false;
+
+    // If this option is set, send back events with an array of data (by default, false to comply with websockets implementation)
+    this.batchMessages = false;
 
     // The queue for data to be send back on a delayed callback,
     //  which holds a queue of message events
