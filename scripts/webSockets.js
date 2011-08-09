@@ -258,7 +258,7 @@ function WebSocket (url,  protocols)
             {
                 // Gather the messages
                 var messages = [];
-                var url = callbackQueue[0].getHost() + ":" + callbackQueue[0].getPort();
+                var url = callbackQueue[0].origin;
                 for(i in callbackQueue) {
                     messages.push(callbackQueue[i].data);
                 }
